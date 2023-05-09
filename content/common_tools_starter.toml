@@ -1,0 +1,9 @@
+
+
+
+[dependencies]
+futures  = "0.3.28"
+dotenv = "0.15.0"
+chrono = "0.4.24"
+filepath = "0.1.2"
+tokio = { version = "1.28.0", features = ["full"] }
