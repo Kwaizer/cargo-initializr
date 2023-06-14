@@ -3,16 +3,10 @@ use crate::cargo_toml_parser_extensions::errors::DependencyError::{
     CouldNotParseDependencies, MissingVersionInStarter, VersionComparatorError,
 };
 use crate::cargo_toml_parser_extensions::traits::{Combine, MyToString};
+use crate::quote;
 use cargo_toml::{Dependency, DependencyDetail};
 use std::collections::HashSet;
 use version_compare::Cmp;
-
-#[macro_export]
-macro_rules! quote {
-    ($opening:literal, $expr:expr, $closing:literal) => {{
-        format!("{}{}{}", $opening, $expr, $closing)
-    }};
-}
 
 impl MyToString for (&String, &Dependency) {
     fn to_string(&self) -> Result<String, DependencyError> {
