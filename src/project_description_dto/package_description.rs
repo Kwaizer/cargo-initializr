@@ -4,4 +4,5 @@ use serde::{Deserialize, Serialize};
 pub struct PackageDescription {
     pub name: String,
     pub author: Option<String>,
+    pub description: Option<String>,
 }

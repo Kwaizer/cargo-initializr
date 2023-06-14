@@ -42,7 +42,7 @@ pub fn generate(description_dto: &ProjectDescriptionDto) -> Result<Vec<u8>, Box<
     };
 
     let zipped_project = zip_project(
-        generator.get_hashed_dir(),
+        generator.get_hashed_dir().clone(),
         &description_dto.package_description.name,
         root_dir.unwrap(),
         zip::CompressionMethod::Deflated,
