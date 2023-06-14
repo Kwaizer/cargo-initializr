@@ -10,7 +10,7 @@ use thiserror::Error;
 
 use crate::cargo_toml_parser_extensions::traits::Combine;
 use crate::cargo_toml_parser_extensions::traits::MyToString;
-use crate::generate_service::generator::ProjectGeneratingError::{Section};
+use crate::service::project_generator::ProjectGeneratingError::Section;
 
 pub const MAIN: &str = r#"fn main() {
     println!("Hello, world!");
@@ -61,7 +61,7 @@ impl<'a> ProjectGenerator<'a> {
         }
     }
 
-    pub(crate) fn generate_project(&self) -> Result<PathBuf, Box<dyn Error>> {
+    pub fn generate_project(&self) -> Result<PathBuf, Box<dyn Error>> {
         let hashed_dir = self.generate_hashed_dir()?;
         let root_dir = self.generate_root_dir(hashed_dir)?;
         let src_dir = self.generate_src_dir(&root_dir)?;

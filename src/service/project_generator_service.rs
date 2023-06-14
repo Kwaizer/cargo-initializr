@@ -1,6 +1,8 @@
-use crate::generate_service::generator::ProjectGenerator;
-use crate::generate_service::DownloadServiceError::{Compressing, Generating, Hashing};
 use crate::project_description_dto::ProjectDescriptionDto;
+use crate::service::project_generator::ProjectGenerator;
+use crate::service::project_generator_service::DownloadServiceError::Compressing;
+use crate::service::project_generator_service::DownloadServiceError::Generating;
+use crate::service::project_generator_service::DownloadServiceError::Hashing;
 use crate::{hash, throw};
 use filepath::FilePath;
 use std::collections::hash_map::DefaultHasher;
@@ -12,8 +14,6 @@ use std::path::PathBuf;
 use std::str::FromStr;
 use thiserror::Error;
 use walkdir::WalkDir;
-
-pub mod generator;
 
 #[derive(Error, Debug)]
 pub enum DownloadServiceError {
@@ -67,7 +67,7 @@ fn zip_project(
 
     let zip_file = create_zip_file(hashed_dir, original_project_name)?;
 
-    crate::compressor::zip_dir(
+    crate::service::compressor::zip_dir(
         &mut it.filter_map(|e| e.ok()),
         root_dir_path,
         &zip_file,

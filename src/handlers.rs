@@ -5,8 +5,8 @@ use actix_web::web::Json;
 use actix_web::Error as ActixError;
 use actix_web::{get, HttpResponse, Responder};
 
-use crate::starter_service;
-use crate::starter_service::StarterServiceError;
+use crate::service::starter_service::StarterServiceError;
+use crate::service::{project_generator_service, starter_service};
 use futures::future::ok;
 
 const INVALID_FILES_ERROR_MASSAGE: &str =
@@ -49,7 +49,7 @@ pub async fn starters() -> impl Responder {
 pub async fn download(description_dto: Json<ProjectDescriptionDto>) -> impl Responder {
     let original_project_name = &description_dto.package_description.name;
 
-    let buffered_project = match crate::generate_service::generate(&description_dto.0) {
+    let buffered_project = match project_generator_service::generate(&description_dto.0) {
         Ok(buffered_project) => buffered_project,
         Err(e) => return HttpResponse::InternalServerError().body(e.to_string()),
     };
