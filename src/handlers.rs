@@ -5,13 +5,43 @@ use actix_web::web::Json;
 use actix_web::Error as ActixError;
 use actix_web::{get, HttpResponse, Responder};
 
+use crate::starter_service;
+use crate::starter_service::StarterServiceError;
 use futures::future::ok;
+
+const INVALID_FILES_ERROR_MASSAGE: &str =
+    "Unfortunately something went wrong and ours files are invalid.";
+const DAMAGED_FILES_ERROR_MASSAGE: &str =
+    "Unfortunately something went wrong and ours files are damaged.";
+const NOTHING_TO_OFFER_ERROR_MASSAGE: &str =
+    "Unfortunately something went wrong and we have nothing to offer you :(";
 
 #[get("/starters")]
 pub async fn starters() -> impl Responder {
-    match crate::starter_service::get_starters() {
+    match starter_service::get_starters() {
         Ok(starters) => HttpResponse::Ok().json(starters),
-        Err(e) => HttpResponse::InternalServerError().body(e.to_string()),
+        Err(e) => match &e {
+            StarterServiceError::InvalidStarterManifest(_) => {
+                tracing::error!("{e:?}");
+
+                HttpResponse::InternalServerError().body(INVALID_FILES_ERROR_MASSAGE)
+            }
+            StarterServiceError::NoStartersProvided => {
+                tracing::error!("{e:?}");
+
+                HttpResponse::NotImplemented().body(NOTHING_TO_OFFER_ERROR_MASSAGE)
+            }
+            StarterServiceError::CannotReadMetadataOfStarterFile(_) => {
+                tracing::error!("{e:?}");
+
+                HttpResponse::InternalServerError().body(DAMAGED_FILES_ERROR_MASSAGE)
+            }
+            StarterServiceError::MissingPackageSection(_) => {
+                tracing::error!("{e:?}");
+
+                HttpResponse::VariantAlsoNegotiates().body(INVALID_FILES_ERROR_MASSAGE)
+            }
+        },
     }
 }
 
