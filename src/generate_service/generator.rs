@@ -1,21 +1,16 @@
-use crate::cargo_toml_parser_extensions::errors::DependencyError::CouldNotParseDependencies;
-use crate::generate_service::traits::Generator;
 use crate::project_description_dto::target_kind::TargetKind;
 use crate::project_description_dto::ProjectDescriptionDto;
-use cargo_toml::{Dependency, DepsSet, Manifest};
+use cargo_toml::{DepsSet, Manifest};
 use cargo_toml_builder::CargoToml;
 use std::collections::{BTreeMap, HashSet};
 use std::error::Error;
 use std::path::PathBuf;
 use std::{fs, io};
 use thiserror::Error;
-use tracing_subscriber::fmt::format;
 
 use crate::cargo_toml_parser_extensions::traits::Combine;
 use crate::cargo_toml_parser_extensions::traits::MyToString;
-use crate::generate_service::generator::ProjectGeneratingError::{
-    Directory, Section,
-};
+use crate::generate_service::generator::ProjectGeneratingError::{Section};
 
 pub const MAIN: &str = r#"fn main() {
     println!("Hello, world!");
@@ -42,8 +37,6 @@ pub enum ProjectGeneratingError {
     #[error("Could not generate '{0:?}' section: {1:?}")]
     Section(String, String),
 
-    // #[error("Could not generate dependency section: {0:?}")]
-    // DependencySectionGeneratingFailure(String),
     #[error("Could not generate directory: {0:?}")]
     Directory(#[from] io::Error),
 
@@ -66,6 +59,21 @@ impl<'a> ProjectGenerator<'a> {
             hashed_dir,
             description_dto,
         }
+    }
+
+    pub(crate) fn generate_project(&self) -> Result<PathBuf, Box<dyn Error>> {
+        let hashed_dir = self.generate_hashed_dir()?;
+        let root_dir = self.generate_root_dir(hashed_dir)?;
+        let src_dir = self.generate_src_dir(&root_dir)?;
+
+        match self.description_dto.target_kind {
+            TargetKind::Bin => self.generate_main_file(&src_dir)?,
+            TargetKind::Lib => self.generate_lib_file(&src_dir)?,
+        };
+
+        self.generate_cargo_toml_file(&root_dir)?;
+
+        Ok(root_dir)
     }
 
     pub fn get_hashed_dir(&self) -> &PathBuf {
@@ -219,12 +227,12 @@ impl<'a> ProjectGenerator<'a> {
             .collect::<Vec<String>>();
 
         for dep_name in intersection {
-            let dep_a = starter_a.get(&*dep_name).ok_or_else(|| {
-                Section(dep_name.clone(), "Could not get dependency".into())
-            })?;
-            let dep_b = starter_b.get(&*dep_name).ok_or_else(|| {
-                Section(dep_name.clone(), "Could not get dependency".into())
-            })?;
+            let dep_a = starter_a
+                .get(&*dep_name)
+                .ok_or_else(|| Section(dep_name.clone(), "Could not get dependency".into()))?;
+            let dep_b = starter_b
+                .get(&*dep_name)
+                .ok_or_else(|| Section(dep_name.clone(), "Could not get dependency".into()))?;
 
             let final_dep = dep_a
                 .combine_dependencies(dep_b)
@@ -235,9 +243,9 @@ impl<'a> ProjectGenerator<'a> {
         starter_a.append(&mut starter_b);
 
         for dep_name in symmetric_difference {
-            let key_value = starter_a.get_key_value(&*dep_name).ok_or_else(|| {
-                Section(dep_name.clone(), "Could not get dependency".into())
-            })?;
+            let key_value = starter_a
+                .get_key_value(&*dep_name)
+                .ok_or_else(|| Section(dep_name.clone(), "Could not get dependency".into()))?;
             result.insert(key_value.0.clone(), key_value.1.clone());
         }
 
@@ -276,23 +284,6 @@ impl<'a> ProjectGenerator<'a> {
         path.push(name_with_ext);
 
         Ok(fs::read_to_string(path)?)
-    }
-}
-
-impl<'a> Generator for ProjectGenerator<'a> {
-    fn generate_project(&self) -> Result<PathBuf, Box<dyn Error>> {
-        let hashed_dir = self.generate_hashed_dir()?;
-        let root_dir = self.generate_root_dir(hashed_dir)?;
-        let src_dir = self.generate_src_dir(&root_dir)?;
-
-        match self.description_dto.target_kind {
-            TargetKind::Bin => self.generate_main_file(&src_dir)?,
-            TargetKind::Lib => self.generate_lib_file(&src_dir)?,
-        };
-
-        self.generate_cargo_toml_file(&root_dir)?;
-
-        Ok(root_dir)
     }
 }
 

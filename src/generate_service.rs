@@ -1,5 +1,4 @@
 use crate::generate_service::generator::ProjectGenerator;
-use crate::generate_service::traits::Generator;
 use crate::generate_service::DownloadServiceError::{Compressing, Generating, Hashing};
 use crate::project_description_dto::ProjectDescriptionDto;
 use crate::{hash, throw};
@@ -15,7 +14,6 @@ use thiserror::Error;
 use walkdir::WalkDir;
 
 pub mod generator;
-pub mod traits;
 
 #[derive(Error, Debug)]
 pub enum DownloadServiceError {
