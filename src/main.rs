@@ -3,13 +3,13 @@ use std::path::PathBuf;
 use std::str::FromStr;
 
 mod app;
-mod compressor;
-mod generate_service;
+mod cargo_toml_parser_extensions;
 mod handlers;
 mod logging;
 mod macros;
 mod project_description_dto;
-mod starter_service;
+mod service;
+mod starter_dto;
 
 #[actix_web::main]
 async fn main() -> io::Result<()> {
@@ -33,4 +33,6 @@ fn check_env_vars() {
     port.parse::<u16>().expect("Invalid PORT variable");
 
     dotenv::var("LOG_LEVEL").expect("Missing LOG_LEVEL variable");
+
+    dotenv::var("LABEL").expect("Missing LABEL variable");
 }
