@@ -8,13 +8,6 @@ macro_rules! hash {
 }
 
 #[macro_export]
-macro_rules! throw {
-    ($err:expr) => {
-        return Err(Box::new($err))
-    };
-}
-
-#[macro_export]
 macro_rules! quote {
     ($opening:literal, $expr:expr, $closing:literal) => {{
         format!("{}{}{}", $opening, $expr, $closing)

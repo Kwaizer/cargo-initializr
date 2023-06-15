@@ -1,12 +1,12 @@
 use std::fs::File;
 use std::io::{Read, Seek, Write};
-use std::path::Path;
+use std::path::{Path, PathBuf};
 use walkdir::DirEntry;
 use zip::write::FileOptions;
 
 pub fn zip_dir<T>(
     it: &mut dyn Iterator<Item = DirEntry>,
-    prefix: &str,
+    prefix: PathBuf,
     writer: T,
     method: zip::CompressionMethod,
 ) -> zip::result::ZipResult<()>
@@ -21,7 +21,7 @@ where
     let mut buffer = Vec::new();
     for entry in it {
         let path = entry.path();
-        let name = path.strip_prefix(Path::new(prefix)).unwrap();
+        let name = path.strip_prefix(Path::new(&prefix)).unwrap();
 
         // Write file or directory explicitly
         // Some unzip tools unzip files with directory paths correctly, some do not!
