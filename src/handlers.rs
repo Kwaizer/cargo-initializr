@@ -6,7 +6,7 @@ use actix_web::Error as ActixError;
 use actix_web::{get, HttpResponse, Responder};
 
 use crate::service::project_generation_service::ProjectGeneratingServiceError;
-use crate::service::starter_service;
+use crate::service::{project_generation_service, starter_service};
 use crate::service::starter_service::StarterServiceError;
 use futures::future::ok;
 
@@ -53,7 +53,7 @@ pub async fn download(description_dto: Json<ProjectDescriptionDto>) -> impl Resp
     let original_project_name = &description_dto.package_description.name;
 
     let buffered_project =
-        match crate::service::project_generation_service::generate(&description_dto.0) {
+        match project_generation_service::generate(&description_dto.0) {
             Ok(buffered_project) => buffered_project,
             Err(e) => {
                 return match &e {
