@@ -21,6 +21,8 @@ async fn main() -> io::Result<()> {
 }
 
 fn check_env_vars() {
+    dotenv::from_path("./backend/.env").expect("Failed to read .env file");
+
     let temp = dotenv::var("TEMP").expect("Missing TEMP variable");
     PathBuf::from_str(&temp).expect("invalid TEMP variable");
 

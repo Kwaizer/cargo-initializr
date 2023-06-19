@@ -1,37 +1,5 @@
-[package]
-name = "cargo_initializr"
-version = "1.0.0"
-edition = "2021"
-authors = ["Vlad Matiukhin <vlad.matiukhin@gmail.com>"]
-license = "MIT"
-description = "It like Spring Initializr but for Cargo"
-
-# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
-
-[dependencies]
-#core
-actix-web = "4.3.1"
-
-#serde
-serde = { version = "1.0.156", features = ["derive"] }
-serde_json = "1.0.94"
-
-#common_tools
-futures  = "0.3.28"
-dotenv = "0.15.0"
-chrono = "0.4.24"
-filepath = "0.1.2"
-thiserror = "1.0.40"
-version-compare = "0.1.1"
-zip = "0.6.6"
-walkdir = "2"
-toml = "0.7.3"
-
-#generating_tools
-cargo-toml-builder = "0.3.0"
-cargo_toml = "0.15.2"
-
-#logging
-tracing-actix-web = "0.7.2"
-tracing = "0.1.37"
-tracing-subscriber =  { version = "0.3.16", features = ["env-filter"] }
+[workspace]
+members = [
+    "backend",
+    "frontend"
+]
