@@ -13,3 +13,12 @@ macro_rules! quote {
         format!("{}{}{}", $opening, $expr, $closing)
     }};
 }
+
+#[macro_export]
+macro_rules! push {
+    ($base:expr, $new:expr) => {{
+        let mut path = PathBuf::from(&$base);
+        path.push($new);
+        path
+    }};
+}

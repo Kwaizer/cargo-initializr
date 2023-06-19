@@ -1,4 +1,4 @@
-pub mod compressor;
-pub mod project_generator;
-pub mod project_generator_service;
+mod compressor;
+pub mod project;
+pub mod project_generation_service;
 pub mod starter_service;

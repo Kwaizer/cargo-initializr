@@ -1,0 +1,10 @@
+[package]
+name = "tokio_starter"
+version = "0.1.0"
+edition = "2021"
+description = "This starter is needed for testing and demonstration purposes."
+
+[dependencies]
+futures = "0.2.0"
+tokio = { version = "1.0.0", features = ["full", "another_feature"] }
+cargo_toml = "0.2.0"

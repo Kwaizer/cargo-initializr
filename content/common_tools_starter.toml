@@ -1,8 +1,11 @@
-
-
+[package]
+name = "common_tools_starter"
+version = "0.1.0"
+edition = "2021"
+description = "This starter is needed for testing and demonstration purposes."
 
 [dependencies]
-futures  = "0.3.28"
+futures = "0.3.28"
 dotenv = "0.15.0"
 chrono = "0.4.24"
 filepath = "0.1.2"
