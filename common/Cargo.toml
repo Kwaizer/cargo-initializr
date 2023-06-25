@@ -1,0 +1,12 @@
+[package]
+name = "common"
+version = "1.0.0"
+edition = "2021"
+authors = ["Vlad Matiukhin <vlad.matiukhin@gmail.com>"]
+license = "MIT"
+description = "Common things for Cargo_Initializr (It like Spring Initializr but for Cargo)"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+serde = { version = "1.0.156", features = ["derive"] }

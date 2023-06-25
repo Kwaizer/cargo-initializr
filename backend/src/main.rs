@@ -7,9 +7,7 @@ mod cargo_toml_parser_extensions;
 mod handlers;
 mod logging;
 mod macros;
-mod project_description_dto;
 mod service;
-mod starter_dto;
 
 #[actix_web::main]
 async fn main() -> io::Result<()> {

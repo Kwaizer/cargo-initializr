@@ -4,7 +4,7 @@ use serde::{Deserialize, Serialize};
 pub struct StarterDto {
     pub name: String,
     pub crates: Vec<String>,
-    pub common_description: String,
+    pub description: String,
 }
 
 impl StarterDto {
@@ -12,7 +12,7 @@ impl StarterDto {
         StarterDto {
             name,
             crates: creates,
-            common_description,
+            description: common_description,
         }
     }
 }

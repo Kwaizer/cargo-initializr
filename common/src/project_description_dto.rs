@@ -2,7 +2,6 @@ use package_description::PackageDescription;
 use serde::{Deserialize, Serialize};
 use target_kind::TargetKind;
 
-pub mod file_name;
 pub mod package_description;
 pub mod target_kind;
 

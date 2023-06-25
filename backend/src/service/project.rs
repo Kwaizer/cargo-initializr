@@ -1,4 +1,4 @@
-use crate::project_description_dto::target_kind::TargetKind;
+use common::project_description_dto::target_kind::TargetKind;
 use crate::push;
 use crate::service::project::ProjectError::{NoSuchFile, WritingToFile};
 use std::fs::File;

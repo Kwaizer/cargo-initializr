@@ -1,4 +1,4 @@
-use crate::project_description_dto::ProjectDescriptionDto;
+use common::project_description_dto::ProjectDescriptionDto;
 use crate::service::project::{Project, ProjectFileTarget};
 use crate::{hash, push};
 use cargo_toml::{DepsSet, Manifest};
@@ -13,7 +13,7 @@ use thiserror::Error;
 use crate::cargo_toml_parser_extensions::traits::Combine;
 use crate::cargo_toml_parser_extensions::traits::MyToString;
 
-use crate::project_description_dto::target_kind::TargetKind;
+use common::project_description_dto::target_kind::TargetKind;
 use crate::service::project_generation_service::ProjectGeneratingServiceError::{
     CouldNotGetStarterContent, DependencySection,
 };

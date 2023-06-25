@@ -1,7 +1,7 @@
 use crate::service::starter_service::StarterServiceError::{
     InvalidStarterManifest, MissingPackageSection, NoStartersProvided,
 };
-use crate::starter_dto::StarterDto;
+use common::starter_dto::StarterDto;
 use std::path::PathBuf;
 use thiserror::Error;
 use walkdir::WalkDir;

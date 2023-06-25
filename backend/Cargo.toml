@@ -11,9 +11,9 @@ description = "Backend part for Cargo_Initializr (It like Spring Initializr but 
 [dependencies]
 #core
 actix-web = "4.3.1"
+common = { path = "../common" }
 
 #serde
-serde = { version = "1.0.156", features = ["derive"] }
 serde_json = "1.0.94"
 
 #common_tools

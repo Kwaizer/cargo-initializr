@@ -1,4 +1,4 @@
-use crate::project_description_dto::ProjectDescriptionDto;
+use common::project_description_dto::ProjectDescriptionDto;
 
 use actix_web::http::header::{ContentDisposition, ContentType};
 use actix_web::web::Json;
