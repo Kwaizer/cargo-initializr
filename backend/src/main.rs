@@ -1,3 +1,4 @@
+use std::fs;
 use std::io;
 use std::path::PathBuf;
 use std::str::FromStr;
@@ -22,7 +23,10 @@ fn check_env_vars() {
     dotenv::from_path("./backend/.env").expect("Failed to read .env file");
 
     let temp = dotenv::var("TEMP").expect("Missing TEMP variable");
-    PathBuf::from_str(&temp).expect("invalid TEMP variable");
+    let temp = PathBuf::from_str(&temp).expect("invalid TEMP variable");
+    if !temp.exists() {
+        fs::create_dir(temp).expect("TEMP folder creation failure")
+    }
 
     let content = dotenv::var("CONTENT").expect("Missing CONTENT variable");
     PathBuf::from_str(&content).expect("Invalid CONTENT variable");
