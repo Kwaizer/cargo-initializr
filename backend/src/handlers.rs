@@ -6,8 +6,8 @@ use actix_web::Error as ActixError;
 use actix_web::{get, HttpResponse, Responder};
 
 use crate::service::project_generation_service::ProjectGeneratingServiceError;
-use crate::service::{project_generation_service, starter_service};
 use crate::service::starter_service::StarterServiceError;
+use crate::service::{project_generation_service, starter_service};
 use futures::future::ok;
 
 const INVALID_FILES_ERROR_MASSAGE: &str =
@@ -52,49 +52,48 @@ pub async fn starters() -> impl Responder {
 pub async fn download(description_dto: Json<ProjectDescriptionDto>) -> impl Responder {
     let original_project_name = &description_dto.package_description.name;
 
-    let buffered_project =
-        match project_generation_service::generate(&description_dto.0) {
-            Ok(buffered_project) => buffered_project,
-            Err(e) => {
-                return match &e {
-                    ProjectGeneratingServiceError::DescriptionSection(_) => {
-                        tracing::error!("{e:?}");
+    let buffered_project = match project_generation_service::generate(&description_dto.0) {
+        Ok(buffered_project) => buffered_project,
+        Err(e) => {
+            return match &e {
+                ProjectGeneratingServiceError::DescriptionSection(_) => {
+                    tracing::error!("{e:?}");
 
-                        HttpResponse::InternalServerError().json(GENERATION_FAILURE_ERROR_MASSAGE)
-                    }
-                    ProjectGeneratingServiceError::DependencySection(_) => {
-                        tracing::error!("{e:?}");
+                    HttpResponse::InternalServerError().json(GENERATION_FAILURE_ERROR_MASSAGE)
+                }
+                ProjectGeneratingServiceError::DependencySection(_) => {
+                    tracing::error!("{e:?}");
 
-                        HttpResponse::InternalServerError().json(GENERATION_FAILURE_ERROR_MASSAGE)
-                    }
-                    ProjectGeneratingServiceError::CouldNotGetStarterContent(_) => {
-                        tracing::error!("{e:?}");
+                    HttpResponse::InternalServerError().json(GENERATION_FAILURE_ERROR_MASSAGE)
+                }
+                ProjectGeneratingServiceError::CouldNotGetStarterContent(_) => {
+                    tracing::error!("{e:?}");
 
-                        HttpResponse::VariantAlsoNegotiates().json(DAMAGED_FILES_ERROR_MASSAGE)
-                    }
-                    ProjectGeneratingServiceError::CouldNotParseStarterManifest(_) => {
-                        tracing::error!("{e:?}");
+                    HttpResponse::VariantAlsoNegotiates().json(DAMAGED_FILES_ERROR_MASSAGE)
+                }
+                ProjectGeneratingServiceError::CouldNotParseStarterManifest(_) => {
+                    tracing::error!("{e:?}");
 
-                        HttpResponse::VariantAlsoNegotiates().json(DAMAGED_FILES_ERROR_MASSAGE)
-                    }
-                    ProjectGeneratingServiceError::CompressionError(_) => {
-                        tracing::error!("{e:?}");
+                    HttpResponse::VariantAlsoNegotiates().json(DAMAGED_FILES_ERROR_MASSAGE)
+                }
+                ProjectGeneratingServiceError::CompressionError(_) => {
+                    tracing::error!("{e:?}");
 
-                        HttpResponse::InternalServerError().json(GENERATION_FAILURE_ERROR_MASSAGE)
-                    }
-                    ProjectGeneratingServiceError::IoError(_) => {
-                        tracing::error!("{e:?}");
+                    HttpResponse::InternalServerError().json(GENERATION_FAILURE_ERROR_MASSAGE)
+                }
+                ProjectGeneratingServiceError::IoError(_) => {
+                    tracing::error!("{e:?}");
 
-                        HttpResponse::InternalServerError().json(GENERATION_FAILURE_ERROR_MASSAGE)
-                    }
-                    ProjectGeneratingServiceError::ProjectError(_) => {
-                        tracing::error!("{e:?}");
+                    HttpResponse::InternalServerError().json(GENERATION_FAILURE_ERROR_MASSAGE)
+                }
+                ProjectGeneratingServiceError::ProjectError(_) => {
+                    tracing::error!("{e:?}");
 
-                        HttpResponse::InternalServerError().json(GENERATION_FAILURE_ERROR_MASSAGE)
-                    }
+                    HttpResponse::InternalServerError().json(GENERATION_FAILURE_ERROR_MASSAGE)
                 }
             }
-        };
+        }
+    };
 
     let bytes = actix_web::web::Bytes::from(buffered_project);
     let stream = futures::stream::once(ok::<_, ActixError>(bytes));

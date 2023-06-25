@@ -1,8 +1,8 @@
-use common::project_description_dto::ProjectDescriptionDto;
 use crate::service::project::{Project, ProjectFileTarget};
 use crate::{hash, push};
 use cargo_toml::{DepsSet, Manifest};
 use cargo_toml_builder::CargoToml;
+use common::project_description_dto::ProjectDescriptionDto;
 use std::collections::hash_map::DefaultHasher;
 use std::collections::{BTreeMap, HashSet};
 use std::hash::{Hash, Hasher};
@@ -13,11 +13,11 @@ use thiserror::Error;
 use crate::cargo_toml_parser_extensions::traits::Combine;
 use crate::cargo_toml_parser_extensions::traits::MyToString;
 
-use common::project_description_dto::target_kind::TargetKind;
 use crate::service::project_generation_service::ProjectGeneratingServiceError::{
     CouldNotGetStarterContent, DependencySection,
 };
 use crate::service::{compressor, project};
+use common::project_description_dto::target_kind::TargetKind;
 
 const MAIN: &str = r#"fn main() {
     println!("Hello, world!");

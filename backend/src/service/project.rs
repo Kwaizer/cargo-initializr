@@ -1,6 +1,6 @@
-use common::project_description_dto::target_kind::TargetKind;
 use crate::push;
 use crate::service::project::ProjectError::{NoSuchFile, WritingToFile};
+use common::project_description_dto::target_kind::TargetKind;
 use std::fs::File;
 use std::io::Write;
 use std::path::PathBuf;
