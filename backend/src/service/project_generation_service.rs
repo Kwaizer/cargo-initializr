@@ -234,6 +234,5 @@ fn get_project_hash(description_dto: &ProjectDescriptionDto) -> String {
 }
 
 fn is_project_hash_exists(project_hash: &str) -> bool {
-    let path = push!(PathBuf::from(dotenv::var("TEMP").unwrap()), project_hash);
-    path.exists()
+    push!(PathBuf::from(dotenv::var("TEMP").unwrap()), project_hash).exists()
 }
