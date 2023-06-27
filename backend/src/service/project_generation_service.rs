@@ -4,7 +4,7 @@ use cargo_toml::{DepsSet, Manifest};
 use cargo_toml_builder::CargoToml;
 use common::project_description_dto::ProjectDescriptionDto;
 use std::collections::hash_map::DefaultHasher;
-use std::collections::{BTreeMap, HashSet};
+use std::collections::HashSet;
 use std::hash::{Hash, Hasher};
 use std::path::PathBuf;
 use std::{fs, io};
@@ -78,7 +78,15 @@ pub fn generate(
         TargetKind::Lib => empty_project.write_to_file(LIB, ProjectFileTarget::Lib)?,
     }
 
+    let label = format!("{}{}", '#', dotenv::var("LABEL").unwrap());
+    let package_section = generate_package_section(description_dto)?;
+
     if description_dto.starters.is_empty() {
+        empty_project.write_to_file(
+            &format!("{}{}", label, package_section),
+            ProjectFileTarget::Cargo
+        )?;
+
         let zipped_project = compressor::zip_project(
             empty_project.get_hashed_dir_path(),
             &description_dto.package_description.name,
@@ -88,8 +96,6 @@ pub fn generate(
         return Ok(fs::read(zipped_project)?);
     }
 
-    let label = format!("{}{}", '#', dotenv::var("LABEL").unwrap());
-    let package_section = generate_package_section(description_dto)?;
     let dependency_section = generate_dependency_section(description_dto)?;
     let cargo_file_content = format!("{}{}{}", label, package_section, dependency_section);
     empty_project.write_to_file(&cargo_file_content, ProjectFileTarget::Cargo)?;
@@ -140,11 +146,12 @@ fn generate_dependency_section(
 }
 
 fn get_starter_content(name: &str) -> Result<String, ProjectGeneratingServiceError> {
-    let name_with_ext = format!("{}{}", name, ".toml");
-    let mut path = PathBuf::from(dotenv::var("CONTENT").unwrap());
-    path.push(name_with_ext);
+    let path_to_starter = push!(
+        PathBuf::from(dotenv::var("CONTENT").unwrap()),
+        format!("{}{}", name, ".toml")
+    );
 
-    fs::read_to_string(path).map_err(|e| {
+    fs::read_to_string(path_to_starter).map_err(|e| {
         tracing::error!("Could not get '{name}' starter content: {e}");
         CouldNotGetStarterContent(name.into())
     })
@@ -154,7 +161,7 @@ fn proceed_starters(
     mut starter_a: DepsSet,
     mut starter_b: DepsSet,
 ) -> Result<DepsSet, ProjectGeneratingServiceError> {
-    let mut result = BTreeMap::new();
+    let mut result = DepsSet::new();
 
     let dependency_set_a = starter_a.clone().into_keys().collect::<HashSet<String>>();
     let dependency_set_b = starter_b.clone().into_keys().collect::<HashSet<String>>();
