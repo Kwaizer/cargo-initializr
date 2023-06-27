@@ -63,8 +63,8 @@ fn read_starter(stater_path: PathBuf) -> Result<StarterDto, StarterServiceError>
         .description()
         .unwrap_or("Missing description")
         .to_string();
-    let dependencies = starter.dependencies.into_keys().collect();
+    let creates = starter.dependencies.into_keys().collect();
 
-    let starter_dto = StarterDto::new(starter_name, dependencies, starter_description);
+    let starter_dto = StarterDto::new(starter_name, creates, starter_description);
     Ok(starter_dto)
 }
