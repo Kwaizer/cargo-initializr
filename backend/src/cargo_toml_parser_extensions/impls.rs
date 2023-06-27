@@ -18,7 +18,7 @@ impl MyToString for (&String, &Dependency) {
                 result.push_str(&quote!('"', version, '"'));
             }
             Dependency::Inherited(_) => {
-                todo!()
+                unreachable!()
             }
             Dependency::Detailed(details) => {
                 result.push_str(&details.to_string()?);
@@ -63,7 +63,7 @@ impl Combine for Dependency {
                 }
 
                 Dependency::Inherited(_) => {
-                    todo!()
+                    unreachable!()
                 }
 
                 Dependency::Detailed(details) => {
@@ -79,7 +79,7 @@ impl Combine for Dependency {
                 }
             },
             Dependency::Inherited(_) => {
-                todo!()
+                unreachable!()
             }
             Dependency::Detailed(details_a) => match other {
                 Dependency::Simple(version_b) => {
@@ -88,7 +88,7 @@ impl Combine for Dependency {
                     Ok(Dependency::Simple(final_version))
                 }
                 Dependency::Inherited(_) => {
-                    todo!()
+                    unreachable!()
                 }
                 Dependency::Detailed(details_b) => {
                     let version_a = details_a.version.as_ref().ok_or(MissingVersionInStarter)?;
