@@ -21,7 +21,7 @@ const GENERATION_FAILURE_ERROR_MASSAGE: &str =
 
 #[get("/starters")]
 pub async fn starters() -> impl Responder {
-    match starter_service::get_starters() {
+    match starter_service::get_starters().await {
         Ok(starters) => HttpResponse::Ok().json(starters),
         Err(e) => match &e {
             StarterServiceError::InvalidStarterManifest(_) => {
@@ -50,9 +50,7 @@ pub async fn starters() -> impl Responder {
 
 #[get("/download")]
 pub async fn download(description_dto: Json<ProjectDescriptionDto>) -> impl Responder {
-    let original_project_name = &description_dto.package_description.name;
-
-    let buffered_project = match project_generation_service::generate(&description_dto.0) {
+    let buffered_project = match project_generation_service::generate(&description_dto.0).await {
         Ok(buffered_project) => buffered_project,
         Err(e) => {
             return match &e {
@@ -102,7 +100,7 @@ pub async fn download(description_dto: Json<ProjectDescriptionDto>) -> impl Resp
         .content_type(ContentType::octet_stream())
         .insert_header(ContentDisposition::attachment(format!(
             "{}{}",
-            original_project_name, ".zip"
+            &description_dto.package_description.name, ".zip"
         )))
         .streaming(stream)
 }

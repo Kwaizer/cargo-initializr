@@ -1,6 +1,7 @@
 use crate::push;
 use crate::service::project::ProjectError::{NoSuchFile, WritingToFile};
 use common::project_description_dto::target_kind::TargetKind;
+use std::fmt::Debug;
 use std::fs::File;
 use std::io::Write;
 use std::path::PathBuf;
@@ -93,19 +94,19 @@ impl Project {
                     .as_mut()
                     .ok_or(NoSuchFile)?
                     .write_all(content.as_bytes())
-                    .map_err(|e| WritingToFile("lib".into(), e.to_string()))?;
+                    .map_err(|e| WritingToFile("main.rs".into(), e.to_string()))?;
             }
             ProjectFileTarget::Lib => {
                 self.lib_file
                     .as_mut()
                     .ok_or(NoSuchFile)?
                     .write_all(content.as_bytes())
-                    .map_err(|e| WritingToFile("lib".into(), e.to_string()))?;
+                    .map_err(|e| WritingToFile("lib.rs".into(), e.to_string()))?;
             }
             ProjectFileTarget::Cargo => {
                 self.cargo_file
                     .write_all(content.as_bytes())
-                    .map_err(|e| WritingToFile("lib".into(), e.to_string()))?;
+                    .map_err(|e| WritingToFile("Cargo.toml".into(), e.to_string()))?;
             }
         };
 

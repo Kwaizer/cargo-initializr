@@ -21,7 +21,7 @@ pub enum StarterServiceError {
     MissingPackageSection(PathBuf),
 }
 
-pub fn get_starters() -> Result<Vec<StarterDto>, StarterServiceError> {
+pub async fn get_starters() -> Result<Vec<StarterDto>, StarterServiceError> {
     let starters_dir = dotenv::var("CONTENT").unwrap();
     let mut starters = Vec::new();
 

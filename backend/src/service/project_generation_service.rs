@@ -63,13 +63,13 @@ pub enum ProjectGeneratingServiceError {
     ProjectError(#[from] project::ProjectError),
 }
 
-pub fn generate(
+pub async fn generate(
     description_dto: &ProjectDescriptionDto,
 ) -> Result<Vec<u8>, ProjectGeneratingServiceError> {
     let project_hash = get_project_hash(description_dto);
     let mut empty_project = Project::new(
         &project_hash,
-        &description_dto.package_description.name,
+        description_dto.package_description.name.get(),
         &description_dto.target_kind,
     )?;
 
@@ -84,12 +84,12 @@ pub fn generate(
     if description_dto.starters.is_empty() {
         empty_project.write_to_file(
             &format!("{}{}", label, package_section),
-            ProjectFileTarget::Cargo
+            ProjectFileTarget::Cargo,
         )?;
 
         let zipped_project = compressor::zip_project(
             empty_project.get_hashed_dir_path(),
-            &description_dto.package_description.name,
+            description_dto.package_description.name.get(),
             zip::CompressionMethod::Deflated,
         )?;
 
@@ -102,7 +102,7 @@ pub fn generate(
 
     let zipped_project = compressor::zip_project(
         empty_project.get_hashed_dir_path(),
-        &description_dto.package_description.name,
+        description_dto.package_description.name.get(),
         zip::CompressionMethod::Deflated,
     )?;
 
@@ -204,7 +204,7 @@ fn generate_package_section(
     description_dto: &ProjectDescriptionDto,
 ) -> Result<String, ProjectGeneratingServiceError> {
     let package_section = CargoToml::builder()
-        .name(&description_dto.package_description.name)
+        .name(description_dto.package_description.name.get())
         .version("0.1.0")
         .description(
             &description_dto
