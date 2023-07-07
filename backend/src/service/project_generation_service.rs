@@ -69,7 +69,7 @@ pub async fn generate(
     let project_hash = get_project_hash(description_dto);
     let mut empty_project = Project::new(
         &project_hash,
-        description_dto.package_description.name.get(),
+        &description_dto.package_description.name,
         &description_dto.target_kind,
     )?;
 
@@ -89,7 +89,7 @@ pub async fn generate(
 
         let zipped_project = compressor::zip_project(
             empty_project.get_hashed_dir_path(),
-            description_dto.package_description.name.get(),
+            &description_dto.package_description.name,
             zip::CompressionMethod::Deflated,
         )?;
 
@@ -102,7 +102,7 @@ pub async fn generate(
 
     let zipped_project = compressor::zip_project(
         empty_project.get_hashed_dir_path(),
-        description_dto.package_description.name.get(),
+        &description_dto.package_description.name,
         zip::CompressionMethod::Deflated,
     )?;
 
@@ -204,7 +204,7 @@ fn generate_package_section(
     description_dto: &ProjectDescriptionDto,
 ) -> Result<String, ProjectGeneratingServiceError> {
     let package_section = CargoToml::builder()
-        .name(description_dto.package_description.name.get())
+        .name(&description_dto.package_description.name)
         .version("0.1.0")
         .description(
             &description_dto
