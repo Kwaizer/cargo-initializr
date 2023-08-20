@@ -11,5 +11,5 @@ pub mod target_kind;
 pub struct ProjectDescriptionDto {
     pub target_kind: TargetKind,
     pub package_description: PackageDescription,
-    pub starters: Vec<StarterDto>,
+    pub starters: Vec<String>,
 }
