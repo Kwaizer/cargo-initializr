@@ -100,7 +100,7 @@ pub async fn download(description_dto: Json<ProjectDescriptionDto>) -> impl Resp
         .content_type(ContentType::octet_stream())
         .insert_header(ContentDisposition::attachment(format!(
             "{}{}",
-            &description_dto.package_description.name, ".zip"
+            &description_dto.package_description.name.0, ".zip"
         )))
         .streaming(stream)
 }

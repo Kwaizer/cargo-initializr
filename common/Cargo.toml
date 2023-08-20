@@ -10,3 +10,4 @@ description = "Common things for Cargo_Initializr (It like Spring Initializr but
 
 [dependencies]
 serde = { version = "1.0.156", features = ["derive"] }
+validator = { version = "0.15", features = ["derive"] }

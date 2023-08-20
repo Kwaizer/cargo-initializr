@@ -1,9 +1,15 @@
 use serde::{Deserialize, Serialize};
+use validator::Validate;
 
-#[derive(Clone, Debug, Default, Hash, Eq, PartialEq, Serialize, Deserialize)]
+#[derive(Validate)]
+#[derive(Serialize, Deserialize)]
+#[derive(Clone, Debug, Default, Hash, Eq, PartialEq)]
 pub struct StarterDto {
+    #[validate(length(min = 1))]
     pub name: String,
+
     pub crates: Vec<String>,
+
     pub description: String,
 }
 

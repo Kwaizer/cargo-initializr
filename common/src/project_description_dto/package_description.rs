@@ -2,19 +2,20 @@ use serde::{Deserialize, Serialize};
 
 const UNNAMED_PROJECT: &str = "unnamed_project";
 
-#[derive(Clone, Debug, Hash, PartialEq, Eq, Serialize, Deserialize)]
+#[derive(Serialize, Deserialize)]
+#[derive(Clone, Debug, Hash, PartialEq, Eq, Default)]
 pub struct PackageDescription {
-    pub name: String,
+    pub name: PackageDescriptionName,
     pub author: Option<String>,
     pub description: Option<String>,
 }
 
-impl Default for PackageDescription {
+#[derive(Serialize, Deserialize)]
+#[derive(Clone, Debug, Hash, PartialEq, Eq)]
+pub struct PackageDescriptionName(pub String);
+
+impl Default for PackageDescriptionName {
     fn default() -> Self {
-        PackageDescription {
-            name: UNNAMED_PROJECT.to_string(),
-            author: Default::default(),
-            description: Default::default()
-        }
+        PackageDescriptionName(UNNAMED_PROJECT.to_string())
     }
 }
