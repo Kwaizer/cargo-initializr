@@ -1,5 +1,5 @@
-use std::str::FromStr;
 use serde::{Deserialize, Serialize};
+use std::str::FromStr;
 
 #[derive(Clone, Debug, Hash, Default, Eq, PartialEq, Serialize, Deserialize)]
 pub enum TargetKind {
