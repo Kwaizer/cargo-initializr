@@ -2,7 +2,7 @@ use crate::stores::{AppConfig, IntegrationMode};
 use url::Url;
 use yewdux::prelude::Dispatch;
 
-pub fn init_app_config(dispatch: Dispatch<AppConfig>) {
+pub fn init_app_config(dispatch: &Dispatch<AppConfig>) {
     let app_config = get_app_config();
     dispatch.set(app_config.clone());
     log::debug!("AppConfig was initialized: {:#?}", app_config)

@@ -23,7 +23,7 @@ fn main() {
 pub fn app() -> Html {
     let (_, dispatch_starters) = use_store::<StartersState>();
     let (_, dispatch_config) = use_store::<AppConfig>();
-    init_app_config(dispatch_config.clone());
+    init_app_config(&dispatch_config);
 
     if dispatch_starters.get().all_starters.is_empty() {
         match dispatch_config.get().integration_mode {
