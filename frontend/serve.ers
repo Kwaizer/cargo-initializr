@@ -1,0 +1,35 @@
+#!/usr/bin/env rust-script
+
+//! ```cargo
+//! [dependencies]
+//! dotenv = "0.15.0"
+//! ```
+
+use std::collections::HashMap;
+
+fn main() {
+    let mut current_dir = std::env::current_dir()
+        .expect("Cannot get current dir")
+        .to_path_buf();
+
+    dbg!(&current_dir);
+
+    current_dir.push(".env");
+    dotenv::from_filename(current_dir).expect("Cannot find '.env' file!");
+
+    let filtered_envs = dotenv::vars()
+        .into_iter()
+        .filter(|(key, _)| key.starts_with("YEW_"))
+        .collect::<HashMap<String, String>>();
+
+    let result = std::process::Command::new("trunk")
+        .arg("serve")
+        .envs(filtered_envs)
+        .spawn()
+        .map_err(|e| eprintln!("Something went wrong {e}"))
+        .expect("Cannot run serve.")
+        .wait()
+        .unwrap();
+
+    println!("{result}");
+}

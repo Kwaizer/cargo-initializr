@@ -15,7 +15,6 @@ yewdux = "0.9.3"
 yewdux-input = "0.1.0"
 common = { path = "../common" }
 serde = { version = "1.0.164", features =["derive"] }
-dotenv = "0.15.0"
 
 #wasm_stuff
 web-sys = { version = "0.3.64", features = ["HtmlInputElement"] }
@@ -26,3 +25,7 @@ reqwasm = "0.5.0"
 #logging
 log = "0.4.6"
 wasm-logger = "0.2.0"
+
+#commmon_tools
+dotenv = "0.15.0"
+url = { version = "2.4.0", features = ["serde"] }
