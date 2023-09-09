@@ -27,12 +27,12 @@ pub fn starter_selection_popup() -> Html {
         .into_iter()
         .collect::<Vec<StarterDto>>();
 
-    // TODO: change comparator to alphabetic
-    all_unselected_starters.sort_by(|first, second| {
-        let first: usize = first.name.parse().unwrap();
-        let second: usize = second.name.parse().unwrap();
-        first.cmp(&second)
-    });
+    // // TODO: change comparator to alphabetic
+    // all_unselected_starters.sort_by(|first, second| {
+    //     let first: usize = first.name.parse().unwrap();
+    //     let second: usize = second.name.parse().unwrap();
+    //     first.cmp(&second)
+    // });
 
     let all_unselected_starters = all_unselected_starters
         .into_iter()

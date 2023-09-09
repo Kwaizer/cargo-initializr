@@ -1,7 +1,8 @@
 use std::collections::HashSet;
+use reqwasm::http::Request;
 
 use yew::{function_component, html, Html};
-use yewdux::prelude::use_store;
+use yewdux::prelude::{Dispatch, use_store};
 
 use common::starter_dto::StarterDto;
 
@@ -40,15 +41,40 @@ fn get_test_starters() -> StartersState {
     }
 }
 
+fn get_real_starters(dispatch: Dispatch<StartersState>) {
+    wasm_bindgen_futures::spawn_local(async move {
+        let all_starters: Vec<StarterDto> = Request::get("http://localhost:8080/starters")
+            .send()
+            .await
+            .unwrap()
+            .json()
+            .await
+            .unwrap();
+
+        log::debug!("{:#?}", &all_starters);
+
+        let state = StartersState {
+            all_starters: HashSet::from_iter(all_starters.clone().into_iter()),
+            selected_starters: HashSet::new(),
+            unselected_starters: HashSet::from_iter(all_starters.into_iter()),
+        };
+
+        dispatch.set(state);
+    });
+}
+
 #[function_component(App)]
 pub fn app() -> Html {
     let (_, dispatch) = use_store::<StartersState>();
 
     if dispatch.get().all_starters.is_empty() {
-        let state = get_test_starters();
-        dispatch.set(state);
+        match dotenv::var("MODE"). { }
+        // let state = get_test_starters();
+        // dispatch.set(state);
 
-        log::debug!("Initial values was successfully set");
+        get_real_starters(dispatch.clone());
+
+        log::debug!("Initial values was successfully set.");
     }
 
     html! {
