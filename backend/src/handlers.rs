@@ -2,6 +2,7 @@ use actix_web::http::header::{ContentDisposition, ContentType};
 use actix_web::web::{Data, Json};
 use actix_web::{get, Error as ActixError, HttpResponse, Responder};
 use common::project_description_dto::ProjectDescriptionDto;
+use common::starter::starter_dto::StarterDto;
 use futures::future::ok;
 
 use crate::service::project_generation_service;
@@ -21,7 +22,13 @@ const GENERATION_FAILURE_ERROR_MASSAGE: &str =
 #[get("/starters")]
 pub async fn starters(starter_service: Data<StarterService>) -> impl Responder {
     match starter_service.get_starters().await {
-        Ok(starters) => HttpResponse::Ok().json(starters),
+        Ok(starters) => {
+            let starters_dto = starters
+                .into_iter()
+                .map(|starter| starter.starter_dto)
+                .collect::<Vec<StarterDto>>();
+            HttpResponse::Ok().json(starters_dto)
+        },
         Err(e) =>
             match &e {
                 StarterServiceError::InvalidStarterManifest(_) => {
