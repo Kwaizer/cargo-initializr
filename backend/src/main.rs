@@ -41,7 +41,7 @@ fn check_env_vars() {
     dotenv::var("LABEL").expect("Missing LABEL variable");
 
     let storage_mode = dotenv::var("STORAGE_MODE").expect("Missing STORAGE_MODE variable");
-    if !storage_mode.eq_ignore_ascii_case("FS") || !storage_mode.eq_ignore_ascii_case("REDIS") {
+    if !storage_mode.eq_ignore_ascii_case("FS") && !storage_mode.eq_ignore_ascii_case("REDIS") {
         panic!("Invalid STORAGE_MODE variable")
     }
 }
