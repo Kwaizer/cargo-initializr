@@ -27,6 +27,8 @@ version-compare = "0.1.1"
 zip = "0.6.6"
 walkdir = "2"
 toml = "0.7.3"
+async-trait = "0.1.73"
+async-mutex = "1.4.0"
 
 #generating_tools
 cargo-toml-builder = "0.3.0"

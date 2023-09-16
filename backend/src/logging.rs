@@ -1,4 +1,5 @@
-use std::{io, sync::Arc};
+use std::io;
+use std::sync::Arc;
 
 use tracing_subscriber::prelude::__tracing_subscriber_SubscriberExt;
 use tracing_subscriber::util::SubscriberInitExt;

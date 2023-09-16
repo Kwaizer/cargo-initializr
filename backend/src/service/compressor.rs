@@ -1,14 +1,18 @@
-use crate::push;
-use crate::service::compressor::CompressingError::StringConversion;
-use filepath::FilePath;
 use std::fs::File;
 use std::io;
 use std::io::{Read, Seek, Write};
 use std::path::{Path, PathBuf};
+
+use filepath::FilePath;
 use thiserror::Error;
 use walkdir::{DirEntry, WalkDir};
 use zip::write::FileOptions;
 use zip::CompressionMethod;
+
+use crate::push;
+use crate::service::compressor::CompressingError::StringConversion;
+
+// TODO: refactor this module
 
 #[derive(Error, Debug)]
 pub enum CompressingError {

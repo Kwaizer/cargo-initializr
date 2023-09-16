@@ -1,0 +1,58 @@
+{
+	"info": {
+		"_postman_id": "602d870b-ec5f-46c7-bb1c-14325564012a",
+		"name": "cargo_init_requests",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "28886057"
+	},
+	"item": [
+		{
+			"name": "getStarters",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "localhost:8080/starters",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"starters"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "downloadProject",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"target_kind\": \"Bin\",\n    \"package_description\": {\n        \"name\": \"MyCoolName\"\n    },\n    \"starters\": [\"common_tools_starter\", \"tokio_starter\"]\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "localhost:8080/download",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"download"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}
