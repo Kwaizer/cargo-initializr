@@ -47,7 +47,7 @@ pub enum ProjectGeneratingServiceError {
     DependencySection(String),
 
     #[error("Could not get content of '{0:?}' starter")]
-    fCouldNotGetStarterContent(String),
+    CouldNotGetStarterContent(String),
 
     #[error("Could not parse starter manifest")]
     CouldNotParseStarterManifest(#[from] cargo_toml::Error),
