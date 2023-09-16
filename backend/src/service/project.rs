@@ -1,12 +1,14 @@
-use crate::push;
-use crate::service::project::ProjectError::{NoSuchFile, WritingToFile};
-use common::project_description_dto::target_kind::TargetKind;
 use std::fmt::Debug;
 use std::fs::File;
 use std::io::Write;
 use std::path::PathBuf;
 use std::{fs, io};
+
+use common::project_description_dto::target_kind::TargetKind;
 use thiserror::Error;
+
+use crate::push;
+use crate::service::project::ProjectError::{NoSuchFile, WritingToFile};
 
 pub enum ProjectFileTarget {
     Main,
@@ -30,10 +32,10 @@ pub enum ProjectError {
 #[allow(dead_code)]
 pub struct Project {
     hashed_dir: PathBuf,
-    root_dir: PathBuf,
-    src_dir: PathBuf,
-    main_file: Option<File>,
-    lib_file: Option<File>,
+    root_dir:   PathBuf,
+    src_dir:    PathBuf,
+    main_file:  Option<File>,
+    lib_file:   Option<File>,
     cargo_file: File,
 }
 
@@ -56,7 +58,7 @@ impl Project {
             TargetKind::Bin => {
                 let main_file_path = push!(src_dir, "main.rs");
                 Some(File::create(&main_file_path)?)
-            }
+            },
             TargetKind::Lib => None,
         };
 
@@ -65,7 +67,7 @@ impl Project {
             TargetKind::Lib => {
                 let lib_file_path = push!(src_dir, "lib.rs");
                 Some(File::create(&lib_file_path)?)
-            }
+            },
         };
 
         let cargo_file_path = push!(root_dir, "Cargo.toml");
@@ -95,19 +97,19 @@ impl Project {
                     .ok_or(NoSuchFile)?
                     .write_all(content.as_bytes())
                     .map_err(|e| WritingToFile("main.rs".into(), e.to_string()))?;
-            }
+            },
             ProjectFileTarget::Lib => {
                 self.lib_file
                     .as_mut()
                     .ok_or(NoSuchFile)?
                     .write_all(content.as_bytes())
                     .map_err(|e| WritingToFile("lib.rs".into(), e.to_string()))?;
-            }
+            },
             ProjectFileTarget::Cargo => {
                 self.cargo_file
                     .write_all(content.as_bytes())
                     .map_err(|e| WritingToFile("Cargo.toml".into(), e.to_string()))?;
-            }
+            },
         };
 
         Ok(())

@@ -1,13 +1,13 @@
-use std::fs;
-use std::io;
 use std::path::PathBuf;
 use std::str::FromStr;
+use std::{fs, io};
 
 mod app;
 mod cargo_toml_parser_extensions;
 mod handlers;
 mod logging;
 mod macros;
+mod repository;
 mod service;
 
 #[actix_web::main]
@@ -39,4 +39,9 @@ fn check_env_vars() {
     dotenv::var("LOG_LEVEL").expect("Missing LOG_LEVEL variable");
 
     dotenv::var("LABEL").expect("Missing LABEL variable");
+
+    let storage_mode = dotenv::var("STORAGE_MODE").expect("Missing STORAGE_MODE variable");
+    if !storage_mode.eq_ignore_ascii_case("FS") || !storage_mode.eq_ignore_ascii_case("REDIS") {
+        panic!("Invalid STORAGE_MODE variable")
+    }
 }

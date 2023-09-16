@@ -1,23 +1,22 @@
-use crate::service::project::{Project, ProjectFileTarget};
-use crate::{hash, push};
-use cargo_toml::{DepsSet, Manifest};
-use cargo_toml_builder::CargoToml;
-use common::project_description_dto::ProjectDescriptionDto;
 use std::collections::hash_map::DefaultHasher;
 use std::collections::HashSet;
+use std::error::Error;
 use std::hash::{Hash, Hasher};
 use std::path::PathBuf;
 use std::{fs, io};
+
+use cargo_toml::{DepsSet, Manifest};
+use cargo_toml_builder::CargoToml;
+use common::project_description_dto::target_kind::TargetKind;
+use common::project_description_dto::ProjectDescriptionDto;
 use thiserror::Error;
 
-use crate::cargo_toml_parser_extensions::traits::Combine;
-use crate::cargo_toml_parser_extensions::traits::MyToString;
-
-use crate::service::project_generation_service::ProjectGeneratingServiceError::{
-    CouldNotGetStarterContent, DependencySection,
-};
+use crate::cargo_toml_parser_extensions::traits::{Combine, MyToString};
+use crate::service::project::{Project, ProjectFileTarget};
+use crate::service::project_generation_service::ProjectGeneratingServiceError::DependencySection;
+use crate::service::starter_service::{StarterService, StarterServiceError};
 use crate::service::{compressor, project};
-use common::project_description_dto::target_kind::TargetKind;
+use crate::{hash, push};
 
 const MAIN: &str = r#"fn main() {
     println!("Hello, world!");
@@ -48,7 +47,7 @@ pub enum ProjectGeneratingServiceError {
     DependencySection(String),
 
     #[error("Could not get content of '{0:?}' starter")]
-    CouldNotGetStarterContent(String),
+    fCouldNotGetStarterContent(String),
 
     #[error("Could not parse starter manifest")]
     CouldNotParseStarterManifest(#[from] cargo_toml::Error),
@@ -61,10 +60,14 @@ pub enum ProjectGeneratingServiceError {
 
     #[error("Could not generate project: {0:?}")]
     ProjectError(#[from] project::ProjectError),
+
+    #[error("Starter service error: {0:?}")]
+    StarterServiceError(#[from] StarterServiceError),
 }
 
 pub async fn generate(
     description_dto: &ProjectDescriptionDto,
+    starter_service: &StarterService,
 ) -> Result<Vec<u8>, ProjectGeneratingServiceError> {
     let project_hash = get_project_hash(description_dto);
     let mut empty_project = Project::new(
@@ -96,7 +99,7 @@ pub async fn generate(
         return Ok(fs::read(zipped_project)?);
     }
 
-    let dependency_section = generate_dependency_section(description_dto)?;
+    let dependency_section = generate_dependency_section(description_dto, starter_service).await?;
     let cargo_file_content = format!("{}{}{}", label, package_section, dependency_section);
     empty_project.write_to_file(&cargo_file_content, ProjectFileTarget::Cargo)?;
 
@@ -109,13 +112,18 @@ pub async fn generate(
     Ok(fs::read(zipped_project)?)
 }
 
-fn generate_dependency_section(
+async fn generate_dependency_section(
     description_dto: &ProjectDescriptionDto,
+    starter_service: &StarterService,
 ) -> Result<String, ProjectGeneratingServiceError> {
     let mut starter_names = Vec::with_capacity(description_dto.starters.len());
 
     for starter in &description_dto.starters {
-        let starter_content = get_starter_content(starter)?;
+        let starter_content = starter_service
+            .get_starter_by_name(starter)
+            .await?
+            .raw_starter
+            .0;
         starter_names.push(starter_content);
     }
 
@@ -143,18 +151,6 @@ fn generate_dependency_section(
     }
 
     Ok(dependency_section)
-}
-
-fn get_starter_content(name: &str) -> Result<String, ProjectGeneratingServiceError> {
-    let path_to_starter = push!(
-        PathBuf::from(dotenv::var("CONTENT").unwrap()),
-        format!("{}{}", name, ".toml")
-    );
-
-    fs::read_to_string(path_to_starter).map_err(|e| {
-        tracing::error!("Could not get '{name}' starter content: {e}");
-        CouldNotGetStarterContent(name.into())
-    })
 }
 
 fn proceed_starters(

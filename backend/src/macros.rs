@@ -9,9 +9,7 @@ macro_rules! hash {
 
 #[macro_export]
 macro_rules! quote {
-    ($opening:literal, $expr:expr, $closing:literal) => {{
-        format!("{}{}{}", $opening, $expr, $closing)
-    }};
+    ($opening:literal, $expr:expr, $closing:literal) => {{ format!("{}{}{}", $opening, $expr, $closing) }};
 }
 
 #[macro_export]
@@ -20,5 +18,15 @@ macro_rules! push {
         let mut path = PathBuf::from(&$base);
         path.push($new);
         path
+    }};
+}
+
+#[macro_export]
+macro_rules! downcast {
+    ($downcast_to:ty) => {{
+        |e| {
+            let err = e.downcast::<$downcast_to>().unwrap();
+            *err
+        }
     }};
 }
