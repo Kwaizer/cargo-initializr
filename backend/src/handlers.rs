@@ -1,6 +1,6 @@
 use actix_web::http::header::{ContentDisposition, ContentType};
 use actix_web::web::{Data, Json};
-use actix_web::{get, Error as ActixError, HttpResponse, Responder};
+use actix_web::{get, post, Error as ActixError, HttpResponse, Responder};
 use common::project_description_dto::ProjectDescriptionDto;
 use common::starter::starter_dto::StarterDto;
 use futures::future::ok;
@@ -60,7 +60,7 @@ pub async fn starters(starter_service: Data<StarterService>) -> impl Responder {
     }
 }
 
-#[get("/download")]
+#[post("/download")]
 pub async fn download(
     description_dto: Json<ProjectDescriptionDto>,
     starter_service: Data<StarterService>,
