@@ -8,7 +8,6 @@ mod extractor;
 mod handlers;
 mod logging;
 mod macros;
-mod repository;
 mod service;
 mod storage;
 
