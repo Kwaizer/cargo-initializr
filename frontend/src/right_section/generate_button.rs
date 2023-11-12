@@ -4,7 +4,6 @@ use yewdux::prelude::use_store;
 
 use crate::stores::{AppConfig, IntegrationMode, ProjectDescriptionState, StartersState};
 
-
 #[function_component(GenerateButton)]
 pub fn generate_button() -> Html {
     let (project_description_store, _) = use_store::<ProjectDescriptionState>();
@@ -13,11 +12,17 @@ pub fn generate_button() -> Html {
 
     let download_url = match app_config_store.integration_mode {
         IntegrationMode::Test => {
-            log::debug!("generating {:#?}", &project_description_store.project_description);
+            log::debug!(
+                "generating {:#?}",
+                &project_description_store.project_description
+            );
             "".to_string()
-        },
+        }
         IntegrationMode::Production => {
-            log::debug!("generating {:#?}", &project_description_store.project_description);
+            log::debug!(
+                "generating {:#?}",
+                &project_description_store.project_description
+            );
             let desc = project_description_store.project_description.clone();
             let mut url_builder = URLBuilder::new();
             url_builder
@@ -37,12 +42,13 @@ pub fn generate_button() -> Html {
             }
 
             if !selected_starter_store.selected_starters.is_empty() {
-                let starters = selected_starter_store.selected_starters
-                        .clone()
-                        .into_iter()
-                        .map(|s| s.name)
-                        .collect::<Vec<String>>()
-                        .join(";");
+                let starters = selected_starter_store
+                    .selected_starters
+                    .clone()
+                    .into_iter()
+                    .map(|s| s.name)
+                    .collect::<Vec<String>>()
+                    .join(";");
                 let starters = format!("[{starters}]");
                 url_builder.add_param("starters", &starters);
             }
@@ -59,4 +65,3 @@ pub fn generate_button() -> Html {
         </button></a>
     }
 }
-

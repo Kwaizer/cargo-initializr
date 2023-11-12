@@ -1,6 +1,5 @@
 use std::collections::hash_map::DefaultHasher;
 use std::collections::HashSet;
-use std::error::Error;
 use std::hash::{Hash, Hasher};
 use std::path::PathBuf;
 use std::{fs, io};
@@ -14,8 +13,9 @@ use thiserror::Error;
 use crate::cargo_toml_parser_extensions::traits::{Combine, MyToString};
 use crate::service::project::{Project, ProjectFileTarget};
 use crate::service::project_generation_service::ProjectGeneratingServiceError::DependencySection;
-use crate::service::starter_service::{StarterService, StarterServiceError};
+use crate::service::starter_service::StarterService;
 use crate::service::{compressor, project};
+use crate::storage::traits::MapStorage;
 use crate::{hash, push};
 
 const MAIN: &str = r#"fn main() {
@@ -60,14 +60,11 @@ pub enum ProjectGeneratingServiceError {
 
     #[error("Could not generate project: {0:?}")]
     ProjectError(#[from] project::ProjectError),
-
-    #[error("Starter service error: {0:?}")]
-    StarterServiceError(#[from] StarterServiceError),
 }
 
-pub async fn generate(
+pub async fn generate<T: MapStorage>(
     description_dto: &ProjectDescriptionDto,
-    starter_service: &StarterService,
+    starter_service: &StarterService<T>,
 ) -> Result<Vec<u8>, ProjectGeneratingServiceError> {
     let project_hash = get_project_hash(description_dto);
     let mut empty_project = Project::new(
@@ -112,16 +109,17 @@ pub async fn generate(
     Ok(fs::read(zipped_project)?)
 }
 
-async fn generate_dependency_section(
+async fn generate_dependency_section<T: MapStorage>(
     description_dto: &ProjectDescriptionDto,
-    starter_service: &StarterService,
+    starter_service: &StarterService<T>,
 ) -> Result<String, ProjectGeneratingServiceError> {
     let mut starter_names = Vec::with_capacity(description_dto.starters.len());
 
     for starter in &description_dto.starters {
         let starter_content = starter_service
             .get_starter_by_name(starter)
-            .await?
+            .await
+            .map_err(|e| ProjectGeneratingServiceError::CouldNotGetStarterContent(e.to_string()))?
             .raw_starter
             .0;
         starter_names.push(starter_content);

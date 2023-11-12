@@ -2,7 +2,7 @@ use yew::virtual_dom::VNode;
 use yew::{function_component, html, Html};
 use yewdux::prelude::use_store;
 
-use common::starter_dto::StarterDto;
+use common::starter::starter_dto::StarterDto;
 
 use crate::stores::StartersState;
 
@@ -20,7 +20,7 @@ fn find_starter() -> Html {
 pub fn starter_selection_popup() -> Html {
     let (_, dispatch) = use_store::<StartersState>();
 
-    let mut all_unselected_starters = dispatch
+    let all_unselected_starters = dispatch
         .get()
         .unselected_starters
         .clone()

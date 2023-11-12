@@ -4,3 +4,8 @@ members = [
     "common",
     "frontend"
 ]
+
+[workspace.dependencies]
+serde = { version = "1.0.156", features = ["derive"] }
+log = "0.4.6"
+dotenv = "0.15.0"

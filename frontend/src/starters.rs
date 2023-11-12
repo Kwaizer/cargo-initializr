@@ -1,5 +1,5 @@
 use crate::stores::StartersState;
-use common::starter_dto::StarterDto;
+use common::starter::starter_dto::StarterDto;
 use reqwasm::http::Request;
 use std::collections::HashSet;
 use url::Url;

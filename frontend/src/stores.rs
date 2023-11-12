@@ -5,7 +5,7 @@ use url::Url;
 use yewdux::prelude::Store;
 
 use common::project_description_dto::ProjectDescriptionDto;
-use common::starter_dto::StarterDto;
+use common::starter::starter_dto::StarterDto;
 
 #[derive(Store, Default, Clone, Debug, PartialEq, Eq, Serialize, Deserialize)]
 #[store(storage = "session")]

@@ -5,7 +5,7 @@ use crate::config::init_app_config;
 
 use crate::left_section::LeftSection;
 use crate::right_section::RightSection;
-use crate::starters::{get_starters, get_mock_starters};
+use crate::starters::{get_mock_starters, get_starters};
 use crate::stores::{AppConfig, IntegrationMode, StartersState};
 
 mod config;

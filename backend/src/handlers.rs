@@ -1,27 +1,28 @@
 use actix_web::http::header::{ContentDisposition, ContentType};
-use actix_web::web::{Data, Json};
-use actix_web::{get, post, Error as ActixError, HttpResponse, Responder};
-use common::project_description_dto::ProjectDescriptionDto;
+use actix_web::web::Data;
+use actix_web::{get, Error as ActixError, HttpResponse, Responder};
 use common::starter::starter_dto::StarterDto;
 use futures::future::ok;
 
+use crate::app::AppContext;
+use crate::extractor::DownloadPayload;
 use crate::service::project_generation_service;
 use crate::service::project_generation_service::ProjectGeneratingServiceError;
-use crate::service::starter_service::{StarterService, StarterServiceError};
-use crate::service::traits::StarterRepository;
+use crate::storage::errors::MapStorageError;
 
 const INVALID_FILES_ERROR_MASSAGE: &str =
     "Unfortunately something went wrong and ours files are invalid.";
 const DAMAGED_FILES_ERROR_MASSAGE: &str =
     "Unfortunately something went wrong and ours files are damaged.";
-const NOTHING_TO_OFFER_ERROR_MASSAGE: &str =
-    "Unfortunately something went wrong and we have nothing to offer you :(";
 const GENERATION_FAILURE_ERROR_MASSAGE: &str =
     "Unfortunately something went wrong and we cannot generate this project.";
+const CANNOT_FIND_FILES_ERROR_MASSAGE: &str =
+    "Unfortunately something went wrong and we cannot find starter.";
+const UNKNOWN_ERROR_MASSAGE: &str = "Unfortunately something went wrong.";
 
 #[get("/starters")]
-pub async fn starters(starter_service: Data<StarterService>) -> impl Responder {
-    match starter_service.get_starters().await {
+pub async fn starters(ctx: Data<AppContext>) -> impl Responder {
+    match ctx.starter_service.get_starters().await {
         Ok(starters) => {
             let starters_dto = starters
                 .into_iter()
@@ -31,44 +32,35 @@ pub async fn starters(starter_service: Data<StarterService>) -> impl Responder {
         },
         Err(e) =>
             match &e {
-                StarterServiceError::InvalidStarterManifest(_) => {
+                MapStorageError::Unknown(unknown_error) => {
+                    tracing::error!("{unknown_error}: {e:?}");
+
+                    HttpResponse::InternalServerError().json(UNKNOWN_ERROR_MASSAGE)
+                },
+                MapStorageError::DeserializeFailed(_) => {
                     tracing::error!("{e:?}");
 
                     HttpResponse::InternalServerError().json(INVALID_FILES_ERROR_MASSAGE)
                 },
-                StarterServiceError::NoStartersProvided => {
+                MapStorageError::SerializeFailed(_) => {
                     tracing::error!("{e:?}");
 
-                    HttpResponse::NotImplemented().json(NOTHING_TO_OFFER_ERROR_MASSAGE)
+                    HttpResponse::InternalServerError().json(INVALID_FILES_ERROR_MASSAGE)
                 },
-                StarterServiceError::CannotReadMetadataOfStarterFile(_) => {
-                    tracing::error!("{e:?}");
+                MapStorageError::KeyNotFound(key) => {
+                    tracing::error!("Cannot find {key}: {e:?}");
 
-                    HttpResponse::InternalServerError().json(DAMAGED_FILES_ERROR_MASSAGE)
-                },
-                StarterServiceError::MissingPackageSection(_) => {
-                    tracing::error!("{e:?}");
-
-                    HttpResponse::VariantAlsoNegotiates().json(INVALID_FILES_ERROR_MASSAGE)
-                },
-                StarterServiceError::CannotReadStarterFile(_) => {
-                    tracing::error!("{e:?}");
-
-                    HttpResponse::VariantAlsoNegotiates().json(INVALID_FILES_ERROR_MASSAGE)
+                    HttpResponse::InternalServerError().json(CANNOT_FIND_FILES_ERROR_MASSAGE)
                 },
             },
     }
 }
 
-#[post("/download")]
-pub async fn download(
-    description_dto: Json<ProjectDescriptionDto>,
-    starter_service: Data<StarterService>,
-) -> impl Responder {
+#[get("/download")]
+pub async fn download(payload: DownloadPayload, ctx: Data<AppContext>) -> impl Responder {
+    let description_dto = payload.project_description_dto;
     let buffered_project =
-        match project_generation_service::generate(&description_dto.0, starter_service.get_ref())
-            .await
-        {
+        match project_generation_service::generate(&description_dto, &ctx.starter_service).await {
             Ok(buffered_project) => buffered_project,
             Err(e) =>
                 return match &e {
@@ -103,11 +95,6 @@ pub async fn download(
                         HttpResponse::InternalServerError().json(GENERATION_FAILURE_ERROR_MASSAGE)
                     },
                     ProjectGeneratingServiceError::ProjectError(_) => {
-                        tracing::error!("{e:?}");
-
-                        HttpResponse::InternalServerError().json(GENERATION_FAILURE_ERROR_MASSAGE)
-                    },
-                    ProjectGeneratingServiceError::StarterServiceError(_) => {
                         tracing::error!("{e:?}");
 
                         HttpResponse::InternalServerError().json(GENERATION_FAILURE_ERROR_MASSAGE)
