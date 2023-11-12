@@ -1,16 +1,17 @@
-use std::collections::HashSet;
-
 use yew::{function_component, html, Html};
 use yewdux::prelude::use_store;
 
-use common::starter_dto::StarterDto;
+use crate::config::init_app_config;
 
 use crate::left_section::LeftSection;
 use crate::right_section::RightSection;
-use crate::stores::StartersState;
+use crate::starters::{get_mock_starters, get_starters};
+use crate::stores::{AppConfig, IntegrationMode, StartersState};
 
+mod config;
 mod left_section;
 mod right_section;
+mod starters;
 mod stores;
 
 fn main() {
@@ -18,37 +19,27 @@ fn main() {
     yew::Renderer::<App>::new().render();
 }
 
-fn get_test_starters() -> StartersState {
-    let starter1 = StarterDto {
-        name: "1".to_string(),
-        crates: vec!["tokio".to_string(), "dotenv".to_string()],
-        description: "Some description".to_string(),
-    };
-
-    let all_starters = (0..=15)
-        .enumerate()
-        .map(|x| StarterDto {
-            name: x.0.to_string(),
-            ..starter1.clone()
-        })
-        .collect::<Vec<StarterDto>>();
-
-    StartersState {
-        all_starters: HashSet::from_iter(all_starters.clone().into_iter()),
-        selected_starters: HashSet::new(),
-        unselected_starters: HashSet::from_iter(all_starters.into_iter()),
-    }
-}
-
 #[function_component(App)]
 pub fn app() -> Html {
-    let (_, dispatch) = use_store::<StartersState>();
+    let (_, dispatch_starters) = use_store::<StartersState>();
+    let (_, dispatch_config) = use_store::<AppConfig>();
+    init_app_config(&dispatch_config);
 
-    if dispatch.get().all_starters.is_empty() {
-        let state = get_test_starters();
-        dispatch.set(state);
+    if dispatch_starters.get().all_starters.is_empty() {
+        match dispatch_config.get().integration_mode {
+            IntegrationMode::Test => {
+                let state = get_mock_starters();
+                dispatch_starters.set(state);
+            }
+            IntegrationMode::Production => {
+                get_starters(
+                    dispatch_starters.clone(),
+                    dispatch_config.get().backend_url.clone().unwrap(),
+                );
+            }
+        }
 
-        log::debug!("Initial values was successfully set");
+        log::debug!("Initial values was successfully set.");
     }
 
     html! {

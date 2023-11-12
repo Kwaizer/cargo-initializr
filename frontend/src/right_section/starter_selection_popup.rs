@@ -2,7 +2,7 @@ use yew::virtual_dom::VNode;
 use yew::{function_component, html, Html};
 use yewdux::prelude::use_store;
 
-use common::starter_dto::StarterDto;
+use common::starter::starter_dto::StarterDto;
 
 use crate::stores::StartersState;
 
@@ -20,19 +20,19 @@ fn find_starter() -> Html {
 pub fn starter_selection_popup() -> Html {
     let (_, dispatch) = use_store::<StartersState>();
 
-    let mut all_unselected_starters = dispatch
+    let all_unselected_starters = dispatch
         .get()
         .unselected_starters
         .clone()
         .into_iter()
         .collect::<Vec<StarterDto>>();
 
-    // TODO: change comparator to alphabetic
-    all_unselected_starters.sort_by(|first, second| {
-        let first: usize = first.name.parse().unwrap();
-        let second: usize = second.name.parse().unwrap();
-        first.cmp(&second)
-    });
+    // // TODO: change comparator to alphabetic
+    // all_unselected_starters.sort_by(|first, second| {
+    //     let first: usize = first.name.parse().unwrap();
+    //     let second: usize = second.name.parse().unwrap();
+    //     first.cmp(&second)
+    // });
 
     let all_unselected_starters = all_unselected_starters
         .into_iter()

@@ -8,6 +8,16 @@ pub enum TargetKind {
     Lib,
 }
 
+impl From<&str> for TargetKind {
+    fn from(value: &str) -> Self {
+        match value {
+            "Lib" | "lib" => Self::Lib,
+            "Bin" | "bin" => Self::Bin,
+            _ => Self::Bin,
+        }
+    }
+}
+
 impl ToString for TargetKind {
     fn to_string(&self) -> String {
         match self {
@@ -26,7 +36,7 @@ impl FromStr for TargetKind {
             "lib" => Ok(Self::Lib),
             "Bin" => Ok(Self::Bin),
             "bin" => Ok(Self::Bin),
-            _ => unreachable!(),
+            _ => Err(()),
         }
     }
 }
