@@ -11,6 +11,7 @@ Install `rust-script` and `trunk`:
 Open backend folder and run `cargo run`.  
 Open frontend folfer and run `./serve.ers` (Make sure you installed "trunk" and "rust-script").  
 To test backend without web use [postman](https://www.postman.com/). You can [import](https://learning.postman.com/docs/getting-started/importing-and-exporting/importing-data/) postman collection from `cargo-initializr/backend/postman_requests` folder.
+Enjoy :joystick::magic_wand::sparkles:
 
 # Page examples:
 <img src="frontend/static/assets/Screenshot1.png">
