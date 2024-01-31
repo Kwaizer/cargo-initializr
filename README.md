@@ -8,8 +8,8 @@ Clone repository `git clone git@github.com:rwwwx/cargo-initializr.git`.
 Install `rust-script` and `trunk`:   
 `cargo install rust-script` (Official page: [rust-script](https://rust-script.org/))  
 `cargo install --locked trunk` (Official page: [trunk](https://trunkrs.dev/))  
-Open backend folder and run `cargo run`.  
-Open frontend folfer and run `./serve.ers` (Make sure you installed "trunk" and "rust-script").  
+Open `cargo-initializr/backend` folder and run `cargo run`.  
+Open `cargo-initializr/frontend` folfer and run `./serve.ers` (Make sure you installed "trunk" and "rust-script").  
 To test backend without web use [postman](https://www.postman.com/). You can [import](https://learning.postman.com/docs/getting-started/importing-and-exporting/importing-data/) postman collection from `cargo-initializr/backend/postman_requests` folder.
 Enjoy :joystick::magic_wand::sparkles:
 
