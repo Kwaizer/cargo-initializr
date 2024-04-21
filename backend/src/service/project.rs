@@ -73,16 +73,14 @@ impl Project {
         let cargo_file_path = push!(root_dir, "Cargo.toml");
         let cargo_file = File::create(&cargo_file_path)?;
 
-        let project = Project {
+        Ok(Project {
             hashed_dir,
             root_dir,
             src_dir,
             main_file,
             lib_file,
             cargo_file,
-        };
-
-        Ok(project)
+        })
     }
 
     pub fn write_to_file(
@@ -96,19 +94,19 @@ impl Project {
                     .as_mut()
                     .ok_or(NoSuchFile)?
                     .write_all(content.as_bytes())
-                    .map_err(|e| WritingToFile("main.rs".into(), e.to_string()))?;
+                    .map_err(|e| WritingToFile("main.rs".to_owned(), e.to_string()))?;
             },
             ProjectFileTarget::Lib => {
                 self.lib_file
                     .as_mut()
                     .ok_or(NoSuchFile)?
                     .write_all(content.as_bytes())
-                    .map_err(|e| WritingToFile("lib.rs".into(), e.to_string()))?;
+                    .map_err(|e| WritingToFile("lib.rs".to_owned(), e.to_string()))?;
             },
             ProjectFileTarget::Cargo => {
                 self.cargo_file
                     .write_all(content.as_bytes())
-                    .map_err(|e| WritingToFile("Cargo.toml".into(), e.to_string()))?;
+                    .map_err(|e| WritingToFile("Cargo.toml".to_owned(), e.to_string()))?;
             },
         };
 

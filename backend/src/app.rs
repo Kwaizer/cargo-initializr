@@ -3,7 +3,6 @@ use std::io;
 use actix_cors::Cors;
 use actix_web::web::Data;
 use actix_web::{App, HttpServer};
-use tracing::log;
 use tracing_actix_web::TracingLogger;
 
 use crate::handlers::{download, starters};
@@ -16,24 +15,18 @@ pub struct AppContext {
 }
 
 pub async fn start_up() -> io::Result<()> {
-    let host = dotenv::var("HOST").unwrap();
-    let port = dotenv::var("PORT").unwrap().parse().unwrap();
+    let host = dotenv::var("HOST").expect("Cannot get 'HOST' env var.");
+    let port = dotenv::var("PORT")
+        .expect("Cannot get 'PORT' env var.")
+        .parse()
+        .expect("Cannot parse 'PORT' env var.");
     let ctx = AppContext {
-        starter_service: StarterService::new(
-            InMemoryStorage::new()
-                .map_err(|e| {
-                    log::error!("{e}");
-                    e
-                })
-                .expect("Cannot initialize 'InMemoryStorage'."),
-        ),
+        starter_service: StarterService::in_memory(),
     };
 
     HttpServer::new(move || {
-        let cors = Cors::permissive();
-
         App::new()
-            .wrap(cors)
+            .wrap(Cors::permissive())
             .wrap(TracingLogger::default())
             .app_data(Data::new(ctx.clone()))
             .service(download)

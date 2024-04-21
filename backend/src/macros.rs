@@ -20,14 +20,3 @@ macro_rules! push {
         path
     }};
 }
-
-// #[macro_export]
-// macro_rules! downcast {
-//     ($downcast_to:ty) => {{
-//         |e| {
-//             let err = e.downcast::<$downcast_to>().unwrap();
-//
-//             *err
-//         }
-//     }};
-// }

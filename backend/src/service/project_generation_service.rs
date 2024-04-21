@@ -197,7 +197,7 @@ fn proceed_starters(
 fn generate_package_section(
     description_dto: &ProjectDescriptionDto,
 ) -> Result<String, ProjectGeneratingServiceError> {
-    let package_section = CargoToml::builder()
+    Ok(CargoToml::builder()
         .name(&description_dto.package_description.name)
         .version("0.1.0")
         .description(
@@ -205,19 +205,17 @@ fn generate_package_section(
                 .package_description
                 .description
                 .clone()
-                .unwrap_or_else(|| "No description".to_string()),
+                .unwrap_or_else(|| "No description".to_owned()),
         )
         .author(
             &description_dto
                 .package_description
                 .author
                 .clone()
-                .unwrap_or_else(|| "Unspecified Author".to_string()),
+                .unwrap_or_else(|| "Unspecified Author".to_owned()),
         )
         .build()?
-        .to_string();
-
-    Ok(package_section)
+        .to_string())
 }
 
 fn get_project_hash(description_dto: &ProjectDescriptionDto) -> String {

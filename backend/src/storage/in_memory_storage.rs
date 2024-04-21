@@ -86,7 +86,7 @@ fn read_starter(stater_path: PathBuf) -> Result<Starter, StarterFileError> {
     let starter_description = package_section
         .description()
         .unwrap_or("Missing description")
-        .to_string();
+        .to_owned();
     let creates = starter.dependencies.into_keys().collect();
 
     let starter_dto = StarterDto::new(starter_name, creates, starter_description);
@@ -94,10 +94,8 @@ fn read_starter(stater_path: PathBuf) -> Result<Starter, StarterFileError> {
         fs::read_to_string(&stater_path).map_err(|_| CannotReadStarterFile(stater_path.clone()))?,
     );
 
-    let starter = Starter {
+    Ok(Starter {
         starter_dto,
         raw_starter,
-    };
-
-    Ok(starter)
+    })
 }
